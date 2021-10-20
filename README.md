@@ -1,5 +1,5 @@
 [![Build Status](https://app.travis-ci.com/studentjob4j/grabber.svg?branch=master)](https://app.travis-ci.com/studentjob4j/grabber)
-
+[![codecov](https://codecov.io/gh/studentjob4j/grabber/branch/master/graph/badge.svg?token=LT5573R87S)](https://codecov.io/gh/studentjob4j/grabber)
 Агрегатор Java Вакансий
 Система запускается по расписанию. Период запуска указывается в настройках - app.properties. 
 
