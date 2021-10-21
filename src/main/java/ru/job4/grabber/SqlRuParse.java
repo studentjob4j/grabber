@@ -25,13 +25,16 @@ public class SqlRuParse {
         Elements row = doc.select(".postslisttopic");
         Elements row2 = doc.select(".altCol");
         // получаю по атрибуту - текст и помещаю его в лист
-        for (Element element : row2) {
-            list.add(element.getElementsByAttribute("style").text());
+        for (int i = 0; i < row2.size(); i++) {
+            String text = row2.get(i).getElementsByAttribute("style").text();
+            if (i % 2 == 1) {
+                list.add(text);
+            }
         }
-        int count = 0;
         // тут получаю элемент  - у элемента получаю -
         // первого ребенка под индексом ноль из массива нодов -
         // по атрибуту href получаю ссылку , а по text получаю сам текст
+        int count = 0;
         for (Element td : row) {
             Element href = td.child(0);
             System.out.println(href.attr("href"));
