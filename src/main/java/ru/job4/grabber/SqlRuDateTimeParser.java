@@ -2,23 +2,28 @@ package ru.job4.grabber;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import org.slf4j.Logger;
 
 /**
  * @author Shegai Evgenii
  * @since 21.10.2021
- * @version 1.0
- * Преобразование даты из String to LocalDateTime
+ * @version 2.0
+ * Парсим данные с пяти страниц 1 - 5
  */
 
 public class SqlRuDateTimeParser implements DateTimeParser {
 
+    private static int index = 1;
+    private static final Logger LOG = LoggerFactory.getLogger(SqlRuDateTimeParser.class.getName());
     private Map<String, String> months = new HashMap<>();
 
     public SqlRuDateTimeParser() {
@@ -114,7 +119,43 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(value);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+
+        List<String> list = new ArrayList<>();
+        int count = 0;
+        SqlRuDateTimeParser parse = new SqlRuDateTimeParser();
+        try {
+            while (index <= 5) {
+                Document doc = Jsoup.connect(
+                        String.format("%s/%d", "https://www.sql.ru/forum/job-offers", index)).get();
+                // получаем ссылку и текст
+                Elements row = doc.select(".postslisttopic");
+                // получаем дату
+                Elements row2 = doc.getElementsByClass("altCol");
+                for (Element e : row2) {
+                    // извлекаем дату по селекту
+                    Elements elements = e.select("td[style=text-align:center]");
+                    if (elements.size() != 0) {
+                        list.add(elements.text());
+                    }
+                }
+                for (Element td : row) {
+                    Element href = td.child(0);
+                    //извлекаем ссылку по атрибуту
+                    System.out.println(href.attr("href"));
+                    //извлекаем текст
+                    System.out.println(href.text());
+                    System.out.println(parse.removeCharT(parse.parse(list.get(count++))));
+                    System.out.println();
+                }
+                System.out.println();
+                index++;
+            }
+        } catch (IOException e) {
+            LOG.error(e.getMessage());
+        }
+
+       /* version 1.0
         List<String> list = new ArrayList<>();
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         // Получаю элементы по указанным селектам
@@ -139,6 +180,6 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         for (LocalDateTime value : time) {
             list.add(parser.removeCharT(value));
         }
-        list.stream().forEach(x -> System.out.println(x));
+        list.stream().forEach(x -> System.out.println(x));*/
     }
 }
