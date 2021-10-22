@@ -1,4 +1,4 @@
-package ru.job4.grabber;
+package ru.job4.parser;
 
 import org.junit.Test;
 import static org.hamcrest.core.Is.is;
@@ -16,9 +16,9 @@ public class SimpleParseOneLinkTest {
     @Test
     public void whenGetPost() {
         SimpleParseOneLink post = new SimpleParseOneLink();
-        post.createPostAfterParse();
+        post.createPostAfterParse("https://www.sql.ru/forum/1325330/lidy-be-fe-senior-"
+                + "cistemnye-analitiki-qa-i-devops-moskva-do-200t");
         assertThat(post.getPost().getName(),
                 is("Лиды BE/FE/senior cистемные аналитики/QA и DevOps, Москва, до 200т. [new]"));
     }
-
 }

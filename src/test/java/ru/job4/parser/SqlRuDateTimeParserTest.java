@@ -1,4 +1,4 @@
-package ru.job4.grabber;
+package ru.job4.parser;
 
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
