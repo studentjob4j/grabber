@@ -18,6 +18,9 @@ public class Post {
     private String url;
     private LocalDateTime created;
 
+    public Post() {
+    }
+
     public Post(int id, String name, String description, String url, LocalDateTime created) {
         this.id = id;
         this.name = name;
@@ -83,5 +86,13 @@ public class Post {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, url);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" + "id=" + id + ", name='" + name + '\''
+                + ", description='" + description + '\'' + ", url='"
+                + url + '\''
+                + ", created=" + created + '}';
     }
 }
