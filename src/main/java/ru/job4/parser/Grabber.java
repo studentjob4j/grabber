@@ -6,6 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 import static org.quartz.JobBuilder.newJob;
@@ -25,6 +30,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * и объект Parse - SqlRuParse(он парсит главную страницу и по ссылкам создает лист
  * постов с информацией
  * о вакансиях) и результат помещает в БД .
+ * Сервер поодключается к порту 9000 и при появлении подключения отправляет ответ в виде
+ *  постов полученных из store(PsqlStore) из бд
  * Программа парсит с интервалом 10 сек
  *
  */
@@ -119,11 +126,39 @@ public class Grabber implements Grab {
             }
         }
 
+    /**
+     * Сервер поодключается к порту 9000 и при появлении подключения отправляет ответ в виде
+     * постов полученных из store(PsqlStore) из бд
+     * @param store
+     */
+    public void web(Store store) {
+        new Thread(() -> {
+            try (ServerSocket server = new ServerSocket(
+                    Integer.parseInt(cfg.getProperty("port")))) {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    try (OutputStream out = socket.getOutputStream()) {
+                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                        for (Post post : store.getAll()) {
+                            out.write(post.toString().getBytes(Charset.forName("Windows-1251")));
+                            out.write(System.lineSeparator().getBytes());
+                        }
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
         public static void main(String[] args) throws Exception {
             Grabber grab = new Grabber();
             grab.cfg();
             Scheduler scheduler = grab.scheduler();
             Store store = grab.store("post");
             grab.init(new SqlRuParse(), store, scheduler);
+            grab.web(store);
         }
 }
