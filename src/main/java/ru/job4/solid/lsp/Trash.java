@@ -23,13 +23,25 @@ public class Trash implements Store {
     }
 
     @Override
-    public boolean add(Food food) {
+    public void add(Food food) {
+        this.trash.add(food);
+    }
+
+    @Override
+    public boolean accept(Food food) {
         boolean result = false;
-        ControlQualityClient quality = new ControlQualityClient();
-        if (quality.countExpirationDatePercentage(food) == 100) {
-            this.trash.add(food);
+        int value = calculatePercent(food);
+        if (value >= 100) {
             result = true;
         }
         return result;
+    }
+
+    @Override
+    public List<Food> clear() {
+        List<Food> list = new ArrayList<>();
+        list.addAll(this.trash);
+        this.trash.clear();
+        return list;
     }
 }

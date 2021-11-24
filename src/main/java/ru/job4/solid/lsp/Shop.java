@@ -23,19 +23,29 @@ public class Shop implements Store {
     }
 
     @Override
-    public boolean add(Food food) {
+    public void add(Food food) {
+        this.storage.add(food);
+    }
+
+    @Override
+    public boolean accept(Food food) {
         boolean result = false;
-        ControlQualityClient control = new ControlQualityClient();
-        int temp = control.countExpirationDatePercentage(food);
-        if (temp >= 25 && temp <= 75) {
-            this.storage.add(food);
+        int value = calculatePercent(food);
+        if (value >= 25 && value <= 75) {
             result = true;
-        } else if (temp > 75 && temp < 100) {
+        } else if (value > 75 && value < 100) {
             double newPrice = food.getPrice() - food.getDiscount();
             food.setPrice(newPrice);
-            this.storage.add(food);
             result = true;
         }
         return result;
+    }
+
+    @Override
+    public List<Food> clear() {
+        List<Food> list = new ArrayList<>();
+        list.addAll(this.storage);
+        this.storage.clear();
+        return list;
     }
 }

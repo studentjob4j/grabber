@@ -79,4 +79,17 @@ public class ControlQualityClientTest {
         assertThat(trash.getStorage().get(0).getName(), is("Onion"));
     }
 
+    @Test
+    public void whenResortFood() {
+        LocalDate created = LocalDate.of(2021, 11, 20);
+        LocalDate expire = LocalDate.of(2021, 11, 30);
+        Onion onion = new Onion("Onion", expire, created, 40, 0);
+        ControlQualityClient client = new ControlQualityClient();
+        client.setStore(list);
+        client.action(onion);
+        client.resort();
+        Shop shop = (Shop) client.getStore().get(1);
+        assertThat(shop.getStorage().get(0).getName(), is("Onion"));
+    }
+
 }

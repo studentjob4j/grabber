@@ -1,7 +1,6 @@
 package ru.job4.solid.lsp;
 
-import java.time.LocalDate;
-import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,34 +23,33 @@ public class ControlQualityClient {
     }
 
     /**
-     * Данный метод считает оставшийся срок годности продукта в процентах
-     * @param food
-     * @return число (процент)
+     * достает все продукты из хранилищ и помещает их в один лист
+     * и очищает хранилища вызывая метод clear
      */
-    public int countExpirationDatePercentage(Food food) {
-        LocalDate expire = food.getExpireDate();
-        LocalDate create = food.getCreateDate();
-        LocalDate now = LocalDate.now();
-        Period allTime = Period.between(expire, create);
-        Period current = Period.between(expire, now);
-        int currentDays = Math.abs(current.getDays());
-        int allDays = Math.abs(allTime.getDays());
-        int result = 100 - (currentDays * 100) / allDays;
-        return result;
+
+    public void resort() {
+        List<Food> allFood = new ArrayList<>();
+        for (Store storage : this.store) {
+            allFood.addAll(storage.clear());
+        }
+        for (Food food : allFood) {
+            action(food);
+        }
     }
 
     /**
-     * метод проверяет куда поместить продукт у каждого хранилища вызывается метод добавления
-     * и проверяется условие . Если условие выполняется то продук помещается
-     * в данное хранилище
+     * у каждого хранилища вызывается метод проверки соответсвия продукта условию
+     * если соответсвует , то продукт добавляется в данное хранилище
      * @param food
      */
 
     public void action(Food food) {
         for (Store temp : this.store) {
-            if (temp.add(food)) {
+            if (temp.accept(food)) {
+                temp.add(food);
                 break;
             }
         }
     }
+
 }

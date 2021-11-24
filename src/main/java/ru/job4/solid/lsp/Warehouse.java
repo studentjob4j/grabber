@@ -23,13 +23,25 @@ public class Warehouse implements Store {
     }
 
     @Override
-    public boolean add(Food food) {
+    public void add(Food food) {
+        this.storage.add(food);
+    }
+
+    @Override
+    public boolean accept(Food food) {
         boolean result = false;
-        ControlQualityClient control = new ControlQualityClient();
-        if (control.countExpirationDatePercentage(food) < 25) {
-            this.storage.add(food);
+        int value = calculatePercent(food);
+        if (value < 25) {
             result = true;
         }
         return result;
+    }
+
+    @Override
+    public List<Food> clear() {
+        List<Food> list = new ArrayList<>();
+        list.addAll(this.storage);
+        this.storage.clear();
+        return list;
     }
 }
